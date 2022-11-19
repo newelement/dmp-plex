@@ -42,6 +42,27 @@
 
 			<div class="mb-5">
 				<label
+					for="plex-use-ssl"
+					class="text-gray-300 block mb-2 font-bold flex items-center"
+				>
+					<input
+						type="checkbox"
+						class="text-black"
+						id="plex-use-ssl"
+						aria-describedby="plex-use-sslHelp"
+						name="plex_use_ssl"
+						v-model="plexUseSsl"
+					/>
+					<span class="ml-2">Use SSL for Plex IP address</span>
+				</label>
+				<div
+					id="plex-use-sslHelp"
+					class="text-gray-400 text-sm"
+				></div>
+			</div>
+
+			<div class="mb-5">
+				<label
 					for="plex-show-movie-now-playing"
 					class="text-gray-300 block mb-2 font-bold flex items-center"
 				>
@@ -49,7 +70,7 @@
 						type="checkbox"
 						class="text-black"
 						id="plex-show-movie-now-playing"
-						aria-describedby="plex-show-movie-now-playingsHelp"
+						aria-describedby="plex-show-movie-now-playingHelp"
 						name="show_movie_now_playing"
 						v-model="plexShowMovieNowPlaying"
 					/>
@@ -239,5 +260,7 @@
 				</div>
 			</div>
 
-		<button type="submit" class="btn-primary">Save</button>
+		<div>{{settingMessage}}</div>
+
+		<button type="submit" @click.prevent="updateSettings" class="btn-primary">Save</button>
 </div>

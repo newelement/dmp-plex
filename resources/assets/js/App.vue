@@ -14,6 +14,62 @@ export default {
     },
     computed: {
         ...mapState(usePlexStore, ['settings']),
+        plexIpAddress: {
+            get() {
+                return this.settings.plexIpAddress;
+            },
+            set(val) {
+                this.setSetting('plexIpAddress', val);
+            },
+        },
+        plexToken: {
+            get() {
+                return this.settings.plexToken;
+            },
+            set(val) {
+                this.setSetting('plexToken', val);
+            },
+        },
+        plexUseSsl: {
+            get() {
+                return this.settings.plexUseSsl;
+            },
+            set(val) {
+                this.setSetting('plexUseSsl', val);
+            },
+        },
+        plexShowMovieNowPlaying: {
+            get() {
+                return this.settings.plexShowMovieNowPlaying;
+            },
+            set(val) {
+                this.setSetting('plexShowMovieNowPlaying', val);
+            },
+        },
+        plexShowTvNowPlaying: {
+            get() {
+                return this.settings.plexShowTvNowPlaying;
+            },
+            set(val) {
+                this.setSetting('plexShowTvNowPlaying', val);
+            },
+        },
+        plexSyncMovies: {
+            get() {
+                return this.settings.plexSyncMovies;
+            },
+            set(val) {
+                this.setSetting('plexSyncMovies', val);
+            },
+        },
+        plexSyncTv: {
+            get() {
+                return this.settings.plexSyncTv;
+            },
+            set(val) {
+                this.setSetting('plexSyncTv', val);
+            },
+        },
         plexTvSections() {
             return this.plexSections.filter((item) => {
                 return item.type === 'show';
@@ -26,7 +82,12 @@ export default {
         },
     },
     methods: {
-        ...mapActions(usePlexStore, []),
+        ...mapActions(usePlexStore, ['getPlexSettings', 'setSetting']),
+        updateSettings() {
+            //
+            axios.post('/api/dmp-plex/settings', this.settings);
+            console.log('updateSettings');
+        },
         getMovieLibraryName(key) {
             let obj = this.plexMovieSections.find((item) => {
                 return item.key === key;
@@ -80,5 +141,8 @@ export default {
         },
     },
     created() {},
+    mounted() {
+        this.getPlexSettings();
+    },
 };
 </script>

@@ -9,7 +9,7 @@ export const usePlexStore = defineStore('plex', {
     }),
     getters: {},
     actions: {
-        getPLexSettings() {
+        getPlexSettings() {
             return axios
                 .get('/api/dmp-plex/settings')
                 .then((response) => {
@@ -20,6 +20,8 @@ export const usePlexStore = defineStore('plex', {
                     console.log(e.message);
                 });
         },
+        setSettings() {},
+        setSetting(key, val) {},
         setNowPlaying(val) {
             this.nowPlaying = val;
         },

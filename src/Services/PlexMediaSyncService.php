@@ -122,6 +122,7 @@ class PlexMediaSyncService implements MediaSyncInterface
 		// Can also call Plugin::getOptions('dmp-plex') to get full options array
 		$this->plexSettings['plexIpAddress'] = Plugin::getOptionValue('plex_ip_address');
 		$this->plexSettings['plexToken'] = Plugin::getOptionValue('plex_token');
+		$this->plexSettings['plexUseSsl'] = Plugin::getOptionValue('plex_use_ssl');
 		$this->plexSettings['plexShowMovieNowPlaying'] = Plugin::getOptionValue('plex_show_movie_now_playing');
 		$this->plexSettings['plexShowTvNowPlaying'] = Plugin::getOptionValue('plex_show_tv_now_playing');
 		$this->plexSettings['plexSyncMovies'] = Plugin::getOptionValue('plex_sync_movies');
@@ -139,6 +140,7 @@ class PlexMediaSyncService implements MediaSyncInterface
 	{
 		Plugin::updateOption('plex_ip_address', $request->plexIpAddress);
 		Plugin::updateOption('plex_token', $request->plexToken);
+		Plugin::updateOption('plex_use_ssl', $request->plexUseSsl);
 		Plugin::updateOption('plex_show_movie_now_playing', $request->plexShowMovieNowPlaying);
 		Plugin::updateOption('plex_show_tv_now_playing', $request->plexShowTvNowPlaying);
 		Plugin::updateOption('plex_sync_movies', $request->plexSyncMovies);
@@ -158,9 +160,10 @@ class PlexMediaSyncService implements MediaSyncInterface
 	 */
 	public function apiCall($path, $method = 'GET', $params = [])
 	{
+		$protocol = $this->plexSettings['plexUseSsl'] ? 'https' : 'http' ;
 		$response = Http::withHeaders([
 			'Accept' => 'application/json',
-		])->get('http://'.$this->plexIpAddress.':32400'.$path.'?X-Plex-Token='.$this->plexToken);
+		])->get($protocol.'://'.$this->plexIpAddress.':32400'.$path.'?X-Plex-Token='.$this->plexToken);
 
 		return $response->json();
 	}
@@ -200,7 +203,8 @@ class PlexMediaSyncService implements MediaSyncInterface
 
 			foreach ($medias as $media) {
 				if ($media['type'] === 'movie') {
-					$imageUrl = 'http://'.$this->plexIpAddress.':32400'.$media['thumb'].'?X-Plex-Token='.$this->plexToken;
+					$protocol = $this->plexSettings['plexUseSsl'] ? 'https' : 'http' ;
+					$imageUrl = $protocol.'://'.$this->plexIpAddress.':32400'.$media['thumb'].'?X-Plex-Token='.$this->plexToken;
 
 					$savedImage = $this->saveImage($media['title'], $imageUrl);
 
