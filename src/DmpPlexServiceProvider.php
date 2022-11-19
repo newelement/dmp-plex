@@ -1,6 +1,6 @@
 <?php
 
-namespace Newelement\DmpPLex;
+namespace Newelement\DmpPlex;
 
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
