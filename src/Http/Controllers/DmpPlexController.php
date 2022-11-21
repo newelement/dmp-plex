@@ -8,29 +8,34 @@ use Newelement\DmpPlex\Services\PlexMediaSyncService;
 
 class DmpPlexController extends Controller
 {
-	public function install(PlexMediaSyncService $service)
-	{
-		return $service->install();
-	}
+    public function install(PlexMediaSyncService $service)
+    {
+        return $service->install();
+    }
 
-	public function update()
-	{
-		//
-	}
+    public function update()
+    {
+        //
+    }
 
-	public function getSettings(PlexMediaSyncService $service)
-	{
-		return $service->getSettings();
-	}
+    public function getSettings(PlexMediaSyncService $service)
+    {
+        return ['settings' => $service->getSettings()];
+    }
 
-	public function updateSettings(Request $request, PlexMediaSyncService $service)
-	{
-		$service->updateSettings($request);
-		return redirect()->back()->with('success', 'Plex settings updated');
-	}
+    public function getSections(PlexMediaSyncService $service)
+    {
+        return response()->json($service->getSections());
+    }
 
-	public function getNowPlaying(PlexMediaSyncService $service)
-	{
-		return $service->nowPlaying();
-	}
+    public function updateSettings(Request $request, PlexMediaSyncService $service)
+    {
+        $service->updateSettings($request);
+        return ['success' => true];
+    }
+
+    public function getNowPlaying(PlexMediaSyncService $service)
+    {
+        return $service->nowPlaying();
+    }
 }

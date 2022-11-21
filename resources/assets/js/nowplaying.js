@@ -16,9 +16,9 @@ function plexControlPlayerState(state) {
 }
 
 function plexNowPlaying() {
-    const protocol = plexStore.settings.plex_use_ssl ? 'https' : 'http';
-    const baseUrl = protocol + '://' + plexStore.settings.plex_ip_address + ':32400';
-    route += '?X-Plex-Token=' + plexStore.settings.plex_token;
+    const protocol = plexStore.settings.plexUseSsl ? 'https' : 'http';
+    const baseUrl = protocol + '://' + plexStore.settings.plexIpAddress + ':32400';
+    route += '?X-Plex-Token=' + plexStore.settings.plexToken;
     axios
         .get(baseUrl + route + '/status/sessions/')
         .then((response) => {
@@ -40,11 +40,11 @@ function plexNowPlaying() {
                 playing.poster =
                     protocol +
                     '://' +
-                    plexStore.settings.plex_ip_address +
+                    plexStore.settings.plexIpAddress +
                     ':32400' +
                     poster +
                     '?X-Plex-Token=' +
-                    plexStore.settings.plex_token;
+                    plexStore.settings.plexToken;
 
                 playing.contentRating = data.contentRating;
 
@@ -75,10 +75,10 @@ function plexNowPlaying() {
 function startPlexSocket() {
     const socket = new WebSocket(
         'ws://' +
-            plexStore.settings.plex_ip_address +
+            plexStore.settings.plexIpAddress +
             ':32400/:/websockets/notifications' +
             '?X-Plex-Token=' +
-            plexStore.settings.plex_token
+            plexStore.settings.plexToken
     );
 
     socket.addEventListener('open', () => {});
@@ -94,9 +94,9 @@ function startPlexSocket() {
             // Make status session call to check if its a movie
             if (!this.checkedPlexMediaType) {
                 console.log('PLEX CHECK SESSION TYPE');
-                const protocol = plexStore.settings.plex_use_ssl ? 'https' : 'http';
-                const baseUrl = protocol + '://' + plexStore.settings.plex_ip_address + ':32400';
-                route += '?X-Plex-Token=' + plexStore.settings.plex_token;
+                const protocol = plexStore.settings.plexUseSsl ? 'https' : 'http';
+                const baseUrl = protocol + '://' + plexStore.settings.plexIpAddress + ':32400';
+                route += '?X-Plex-Token=' + plexStore.settings.plexToken;
                 axios
                     .get(baseUrl + route + '/status/sessions/')
                     .then((response) => {
@@ -107,9 +107,9 @@ function startPlexSocket() {
                             this.checkedPlexMediaType = true;
                             if (
                                 (data.type === 'movie' &&
-                                    plexStore.settings.plex_show_movie_now_playing) ||
+                                    plexStore.settings.plexShowMovieNowPlaying) ||
                                 ((data.type === 'show' || data.type === 'episode') &&
-                                    plexStore.settings.plex_show_tv_now_playing)
+                                    plexStore.settings.plexShowTvNowPlaying)
                             ) {
                                 plexControlPlayerState(state);
                             }
