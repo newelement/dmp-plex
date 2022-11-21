@@ -106,9 +106,6 @@ class PlexMediaSyncService implements MediaSyncInterface
 
         Plugin::addOptions($options);
 
-        Artisan::call('optimize:clear');
-        Artisan::call('optimize');
-
         return ['success' => true];
     }
 
