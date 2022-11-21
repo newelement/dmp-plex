@@ -1,16 +1,21 @@
-import { usePlexStore } from '@/store/plex';
-const plexStore = usePlexStore();
+let plexStore = {
+    settings: '',
+};
+let nowPlaying = false;
+let checkedPlexMediaType = false;
 
 function plexControlPlayerState(state) {
     switch (state) {
         case 'playing':
-            console.log('-- STARTED NOW PLAYING');
-            plexStore.setNowPlaying(true);
+            console.log('-- PLEX STARTED NOW PLAYING');
+            nowPlaying = true;
+            plexNowPlaying();
             break;
         case 'paused':
         case 'stopped':
-            console.log('-- STOPPED NOW PLAYING');
-            plexStore.setNowPlaying(false);
+            console.log('-- PLEX STOPPED NOW PLAYING');
+            nowPlaying = false;
+            axios.post('/api/stopped', { service: 'dmp-plex' });
             break;
     }
 }
@@ -18,16 +23,17 @@ function plexControlPlayerState(state) {
 function plexNowPlaying() {
     const protocol = plexStore.settings.plexUseSsl ? 'https' : 'http';
     const baseUrl = protocol + '://' + plexStore.settings.plexIpAddress + ':32400';
-    route += '?X-Plex-Token=' + plexStore.settings.plexToken;
+    const params = '?X-Plex-Token=' + plexStore.settings.plexToken;
     axios
-        .get(baseUrl + route + '/status/sessions/')
+        .get(baseUrl + '/status/sessions/' + params)
         .then((response) => {
             const size = response.data.MediaContainer.size;
             if (size > 0) {
                 let data = response.data.MediaContainer.Metadata[0];
                 let playing = {
+                    mediaType: 'movie',
                     contentRating: 0,
-                    rating: 0,
+                    audienceRating: 0,
                     duration: null,
                     poster: '',
                 };
@@ -56,7 +62,6 @@ function plexNowPlaying() {
                     playing.duration = data.duration / 1000 / 60;
                 }
 
-                //this.setNowPlaying(playing);
                 axios
                     .post('/api/now-playing', playing)
                     .then((response) => {
@@ -92,19 +97,19 @@ function startPlexSocket() {
             state = data.NotificationContainer.PlaySessionStateNotification[0].state;
             console.log('PLEX STATE: ', state);
             // Make status session call to check if its a movie
-            if (!this.checkedPlexMediaType) {
+            if (!checkedPlexMediaType) {
                 console.log('PLEX CHECK SESSION TYPE');
                 const protocol = plexStore.settings.plexUseSsl ? 'https' : 'http';
                 const baseUrl = protocol + '://' + plexStore.settings.plexIpAddress + ':32400';
-                route += '?X-Plex-Token=' + plexStore.settings.plexToken;
+                const params = '?X-Plex-Token=' + plexStore.settings.plexToken;
                 axios
-                    .get(baseUrl + route + '/status/sessions/')
+                    .get(baseUrl + '/status/sessions/' + params)
                     .then((response) => {
                         console.log(response);
                         const size = response.data.MediaContainer.size;
                         if (size > 0) {
                             let data = response.data.MediaContainer.Metadata[0];
-                            this.checkedPlexMediaType = true;
+                            checkedPlexMediaType = true;
                             if (
                                 (data.type === 'movie' &&
                                     plexStore.settings.plexShowMovieNowPlaying) ||
@@ -119,15 +124,21 @@ function startPlexSocket() {
             }
         }
 
-        if (state === 'stopped' && plexStore.nowPlaying) {
-            this.checkedPlexMediaType = false;
+        if (state === 'stopped' && nowPlaying) {
+            checkedPlexMediaType = false;
             plexControlPlayerState(state);
         }
     });
 }
 
 setTimeout(() => {
-    plexStore.getPlexSettings().then(() => {
-        startPlexSocket();
-    });
+    axios
+        .get('/api/dmp-plex/settings')
+        .then((response) => {
+            plexStore.settings = response.data.settings;
+            startPlexSocket();
+        })
+        .catch((e) => {
+            console.log('ERROR GETTING PLEX NOW PLAYING SETTINGS: ' + e.message);
+        });
 }, 5000);

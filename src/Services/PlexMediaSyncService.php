@@ -187,11 +187,11 @@ class PlexMediaSyncService implements MediaSyncInterface
 
     public function syncMedia()
     {
-        if ($this->settings->plex_sync_movies) {
-            $this->syncMovies($this->settings->plex_movie_sections);
+        if ($this->plexSettings['plexSyncMovies']) {
+            $this->syncMovies($this->plexSettings['plexMovieLibraries']);
         }
-        if ($this->settings->plex_sync_tv) {
-            $this->syncTv($this->settings->plex_tv_sections);
+        if ($this->plexSettings['plexSyncTv']) {
+            $this->syncTv($this->plexSettings['plexTvLibraries']);
         }
     }
 
@@ -204,7 +204,7 @@ class PlexMediaSyncService implements MediaSyncInterface
             foreach ($medias as $media) {
                 if ($media['type'] === 'movie') {
                     $protocol = $this->plexSettings['plexUseSsl'] ? 'https' : 'http' ;
-                    $imageUrl = $protocol.'://'.$this->plexIpAddress.':32400'.$media['thumb'].'?X-Plex-Token='.$this->plexToken;
+                    $imageUrl = $protocol.'://'.$this->plexSettings['plexIpAddress'].':32400'.$media['thumb'].'?X-Plex-Token='.$this->plexSettings['plexToken'];
 
                     $savedImage = $this->saveImage($media['title'], $imageUrl);
 
@@ -231,7 +231,7 @@ class PlexMediaSyncService implements MediaSyncInterface
             $shows = $json['MediaContainer']['Metadata'];
             foreach ($shows as $media) {
                 if ($media['type'] === 'show') {
-                    $imageUrl = 'http://'.$this->plexIpAddress.':32400'.$media['thumb'].'?X-Plex-Token='.$this->plexToken;
+                    $imageUrl = 'http://'.$this->plexSettings['plexIpAddress'].':32400'.$media['thumb'].'?X-Plex-Token='.$this->plexSettings['plexToken'];
 
                     $savedImage = $this->saveImage($media['title'], $imageUrl);
 
