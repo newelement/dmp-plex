@@ -15,7 +15,8 @@ function plexControlPlayerState(state) {
         case 'stopped':
             console.log('-- PLEX STOPPED NOW PLAYING');
             nowPlaying = false;
-            axios.post('/api/stopped', { service: 'dmp-plex' });
+            checkedPlexMediaType = false;
+            axios.post('/api/stopped', { mediaSource: 'dmp-plex' });
             break;
     }
 }
@@ -31,6 +32,7 @@ function plexNowPlaying() {
             if (size > 0) {
                 let data = response.data.MediaContainer.Metadata[0];
                 let playing = {
+                    mediaSource: 'dmp-plex',
                     mediaType: 'movie',
                     contentRating: 0,
                     audienceRating: 0,
@@ -125,7 +127,6 @@ function startPlexSocket() {
         }
 
         if (state === 'stopped' && nowPlaying) {
-            checkedPlexMediaType = false;
             plexControlPlayerState(state);
         }
     });
@@ -141,4 +142,4 @@ setTimeout(() => {
         .catch((e) => {
             console.log('ERROR GETTING PLEX NOW PLAYING SETTINGS: ' + e.message);
         });
-}, 5000);
+}, 6000);
