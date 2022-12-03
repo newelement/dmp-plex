@@ -124,7 +124,7 @@ function startPlexSocket() {
                                     plexStore.settings.plexShowTvNowPlaying)
                             ) {
                                 console.log(' -- PLEX PRE CONTROL PLAYING STATE');
-                                plexControlPlayerState(state);
+                                plexControlPlayerState(action);
                             }
                         }
                     })
