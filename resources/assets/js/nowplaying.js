@@ -112,12 +112,18 @@ function startPlexSocket() {
                         if (size > 0) {
                             let data = response.data.MediaContainer.Metadata[0];
                             checkedPlexMediaType = true;
+                            console.log('PLEX TYPE: ', data.type);
+                            console.log(
+                                'PLEX STORE PLAYING BOOL: ',
+                                plexStore.settings.plexShowMovieNowPlaying
+                            );
                             if (
                                 (data.type === 'movie' &&
                                     plexStore.settings.plexShowMovieNowPlaying) ||
                                 ((data.type === 'show' || data.type === 'episode') &&
                                     plexStore.settings.plexShowTvNowPlaying)
                             ) {
+                                console.log(' -- PLEX PRE CONTROL PLAYING STATE');
                                 plexControlPlayerState(state);
                             }
                         }
